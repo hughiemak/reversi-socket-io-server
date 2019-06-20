@@ -36,7 +36,7 @@ io.on('connection', function (socket) {
     })
 
     socket.on('join room by id', function (roomId, callback) {
-        console.log("roomId: " + roomId)
+        console.log("Attempting to join room: " + roomId)
         console.log("roomExist: " + roomExist(socket, roomId));
 
         if (roomExist(socket, roomId)){
@@ -54,6 +54,11 @@ io.on('connection', function (socket) {
 
     })
 
+    socket.on('leave room by id', function (roomId, callback){
+        console.log("Attempting to leave room: " + roomId)
+            socket.leave(roomId)
+            callback("Left room: " + roomId)
+    })
 
 
     // socket.broadcast.emit('broadcase from server');
