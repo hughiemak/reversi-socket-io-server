@@ -10,7 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.15.2",
+    "express-http-proxy": "^1.5.1",
+    "http-proxy-middleware": "^0.19.1",
     "nanoid": "^2.0.3",
-    "socket.io": "^2.2.0"
+    "socket.io": "^2.2.0",
+    "url": "^0.11.0"
   }
 }
