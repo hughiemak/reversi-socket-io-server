@@ -10,16 +10,16 @@ var JoinRoomResponse = require('./response/JoinRoomResponse.js').JoinRoomRespons
 var UnjoinableReason = require('./response/JoinRoomResponse.js').UnjoinableReason;
 var CreateRoomResponse = require('./response/CreateRoomResponse.js');
 
-const url = require('url');
-const proxy = require('express-http-proxy');
+// const url = require('url');
+// const proxy = require('express-http-proxy');
 
 var nameSpaceInUse = io.nsps["/"]
 
-const apiProxy = proxy('https://hughiemak.github.io/', {
-    forwardPath: req => url.parse(req.baseUrl).path
-});
+// const apiProxy = proxy('https://hughiemak.github.io/', {
+//     forwardPath: req => url.parse(req.baseUrl).path
+// });
 
-app.use('/', apiProxy);
+// app.use('/', apiProxy);
 
 // const proxy = require('http-proxy-middleware')
 // var apiProxy = proxy('/', {target: 'https://hughiemak.github.io/reversi'});
