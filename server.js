@@ -15,6 +15,10 @@ var CreateRoomResponse = require('./response/CreateRoomResponse.js');
 
 var nameSpaceInUse = io.nsps["/"]
 
+app.get('/', function(req, res){
+  res.send('<h1>Reversi-socket-io Server</h1>');
+});
+
 // const apiProxy = proxy('https://hughiemak.github.io/', {
 //     forwardPath: req => url.parse(req.baseUrl).path
 // });
@@ -190,10 +194,11 @@ function getAllRooms(socket) {
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
 
-var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080
-var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
+// var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080
+// var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
 
 http.listen(port, ip,function () {
+// http.listen(3000,function () {
     console.log( "Listening on " + port + ", port " + ip )
 
     // console.log('listening on *:3000');
