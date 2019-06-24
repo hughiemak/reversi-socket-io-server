@@ -122,7 +122,9 @@ io.on('connection', function (socket) {
                             break
                         }
                     }
-                    io.to(roomId).emit('room full msg from server', {host: host, guest: guest})
+                    // io.to(roomId).emit('room full msg from server', {host: host, guest: guest})
+
+                    io.to(host).emit('room full msg from server', {host: host, guest: guest});
                 })
                 
                 
@@ -193,13 +195,9 @@ function getAllRooms(socket) {
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0'
-
-// var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080
-// var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
-
-http.listen(port, ip, function () {
-// http.listen(3000,function () {
-    console.log( "Listening on " + port + ", port " + ip )
+// http.listen(port, ip, function () {
+http.listen(3000,function () {
+    console.log( "server started")
 
     // console.log('listening on *:3000');
     // initRooms();
