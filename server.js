@@ -146,7 +146,11 @@ io.on('connection', function (socket) {
             callback("Left room: " + roomId)
     })
 
+    socket.on("client emit win", function(win){
+        console("socket: " + socket.id + ", win: " + win)
+    })
 
+    
     // socket.broadcast.emit('broadcase from server');
 });
 
