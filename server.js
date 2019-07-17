@@ -39,7 +39,10 @@ app.get('/', function(req, res){
 //   app.get('/', renderIndex);
 
 io.on('connection', function (socket) {
-    console.log('a user connected');
+    console.log('a user connected, socket.id: ' + socket.id);
+    socket.name = socket.id
+    socket.join("lobby")
+    // console.log("socket.name: " + socket.name)
     socket.on('disconnect', function () {
         console.log('user disconnected');
     });
@@ -81,6 +84,7 @@ io.on('connection', function (socket) {
         // console.log("creating room by socket: " + util.inspect(socket))
         let generatedRoomId = RoomService.generateRoomId();
 
+        socket.leave("lobby");
         socket.join(generatedRoomId);
 
         var response = new CreateRoomResponse(generatedRoomId);
@@ -100,6 +104,7 @@ io.on('connection', function (socket) {
                 callback(response)
             }else{
                 console.log("Joining room: " + roomId)
+                socket.leave("lobby");
                 socket.join(roomId);
                 socket.isHost = false;
                 var response = new JoinRoomResponse(true, null, roomId);
@@ -115,16 +120,23 @@ io.on('connection', function (socket) {
                 getClientsByRoom(roomId, function(clients){
 
                     var host;
-                    var guest = socket.id
+                    var guest = socket.id;
                     for(var i = 0; i < clients.length; i++){
                         if(clients[i] != socket.id){
                             host = clients[i]
                             break
                         }
                     }
+
+                    // console.log("host: " + util.inspect(nameSpaceInUse.connected[host]))
+                    // console.log("guest: " + util.inspect(nameSpaceInUse.connected[guest]))
+
+                    var hostName = nameSpaceInUse.connected[host].name;
+                    var guestName = nameSpaceInUse.connected[guest].name;
+                    
                     // io.to(roomId).emit('room full msg from server', {host: host, guest: guest})
 
-                    io.to(host).emit('room full msg from server', {host: host, guest: guest});
+                    io.to(host).emit('room full msg from server', {host: hostName, guest: guestName});
                 })
                 
                 
@@ -143,15 +155,51 @@ io.on('connection', function (socket) {
     socket.on('leave room by id', function (roomId, callback){
         console.log("Socket: " + socket.id + " attempting to leave room: " + roomId)
             socket.leave(roomId)
+            socket.join("lobby")
             callback("Left room: " + roomId)
     })
 
     socket.on("client emit win", function(win){
         console("socket: " + socket.id + ", win: " + win)
     })
+ 
+    socket.on('broadcast message to room', function(request){
+        const text = request.text
+        const roomId = request.roomId
+        const sender = request.sender
+        console.log("roomId: " + roomId + ", text: " + text, "sender: " + sender)
 
-    
+        let room = socket.rooms
+
+        getClientsByRoom(roomId, function(clients){
+            console.log("clients: " + clients)
+
+            clients.forEach( client =>{
+                io.to(client).emit("broadcast room message from server", {sender: sender, text: text})
+            });
+        })
+
+                // console.log("room: " + util.inspect(room))
+    })
     // socket.broadcast.emit('broadcase from server');
+
+    socket.on("emit socket change name", function(name){
+        socket.name = name
+    })
+
+    socket.on("broadcast message to lobby", function(request){
+        const text = request.text
+        const sender = request.sender
+
+        console.log("text: " + text, "sender: " + sender)
+
+        getClientsByRoom("lobby", function(clients){
+            clients.forEach( client => {
+                io.to(client).emit("broadcast lobby message from server", {sender: sender, text: text})
+            })
+        })
+    })
+    
 });
 
 function getClientsByRoom(room, fn){
@@ -185,31 +233,19 @@ function roomExist(socket, roomId) {
     }else{
         return true
     }
-    // let exist = rooms.includes(roomId);
-    // return exist
+
 }
 
 function getAllRooms(socket) {
     var rooms = io.sockets.adapter.rooms
-    // rooms.splice(0, 1)
-    // console.log("rooms: " + rooms)
-    // console.log("rooms: " + util.inspect(rooms, false, null, true))
     return rooms
 }
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0'
 // http.listen(port, ip, function () {
-http.listen(port, ip, function () {
+http.listen(3000, function () {
     console.log( "server started")
 
-    // console.log('listening on *:3000');
-    // initRooms();
-    // console.log("room: " + room)
-
 });
-
-// function initRooms(){
-//     room = new Room();
-// }
 
